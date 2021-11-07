@@ -4,7 +4,8 @@
 
 #ifndef TESTAPP_SERIALIZATION_H
 #define TESTAPP_SERIALIZATION_H
-/*
+
+#include "Result.h"
 #include "PropertyClass.h"
 
 class TSerializationInterf{
@@ -58,6 +59,6 @@ TResult TSerialization::LoadPropFromFileName(const TString &path, TPropertyClass
     if(prop.IsValid() == false) return false;
     return LoadPropFromFile(path, value, prop);
 }
-*/
+
 
 #endif //TESTAPP_SERIALIZATION_H

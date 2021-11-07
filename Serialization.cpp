@@ -4,7 +4,8 @@
 
 #include "Serialization.h"
 #include <pugixml.hpp>
-/*
+#include "FileFunctions.h"
+
 REGISTER_CODES(TSerializationResult,
     TEXT_CODE(FileNotOpen, "File not opened");
     TEXT_CODE(FileNotSave, "File not saved");
@@ -269,7 +270,7 @@ TResult TSerializationXml::LoadPropFromFile(const TString &path, TPropertyClass 
     else return TSerializationResult::ErrorData;
 }
 
-
+/*
 class TSerializationBin : public TSerializationInterf
 {
 public:
@@ -520,7 +521,7 @@ void TSerializationBin::LoadList(TPropertyClass *obj, FILE* file, const TNode& n
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
-
+*/
 TSerialization::TSerialization(TSerializationKind kind) : impl(SerFromKind(kind))
 {
 
@@ -531,7 +532,7 @@ std::unique_ptr<TSerializationInterf> TSerialization::SerFromKind(TSerialization
     switch (kind)
     {
         case TSerializationKind::Xml : return std::make_unique<TSerializationXml>();
-        case TSerializationKind::Bin : return std::make_unique<TSerializationBin>();
+        //case TSerializationKind::Bin : return std::make_unique<TSerializationBin>();
         default: return std::make_unique<TSerializationXml>();
     }
 
@@ -580,4 +581,3 @@ TResult TSerialization::LoadPropFromFile(const TString &path, TPropertyClass *va
     return false;
 }
 
-*/

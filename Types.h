@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 using TString = std::string;
 using TVecString = std::vector<TString>;
@@ -32,5 +33,5 @@ T &Single(T&& value)
 
 #define STATIC_ARG(TYPE, NAME, ...) static TYPE& NAME(){ static TYPE value(__VA_ARGS__); return value; };
 #define STATIC(TYPE, NAME) static TYPE& NAME(){ static TYPE value; return value; };
-
+#define STR(VALUE) (VALUE).c_str()
 #endif //PROPERTY_TYPES_H
