@@ -20,7 +20,9 @@ FetchContent_Declare(sigslot
         SOURCE_DIR ${SIGSLOT_DIR}
         )
 
-FetchContent_MakeAvailable(pugixml sigslot)
+#FetchContent_MakeAvailable(pugixml sigslot)
+FetchContent_Populate(pugixml)
+FetchContent_Populate(sigslot)
 
 set(PROPERTY_HDR
         Types.h
