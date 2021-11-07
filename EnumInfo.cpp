@@ -3,6 +3,7 @@
 //
 
 #include "EnumInfo.h"
+#include "Algorithms.h"
 
 bool TEnumInfo::Register(const TString& type, const std::type_info& inf, const TVecString& names, const TVecDouble& values, int cat, int from)
 {
