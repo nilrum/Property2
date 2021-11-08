@@ -89,8 +89,6 @@ if(${BUILD_TEST})
 
     #Объявим цель тестирования
     add_executable(PropertyTest
-            ${PROPERTY_SRC}
-            ${PUGIXML_DIR}/src/pugixml.cpp
             tests/PropertyTest.cpp
             tests/TestCasePropertyClass.cpp
             tests/VariableTest.cpp
@@ -101,7 +99,7 @@ if(${BUILD_TEST})
                 PUBLIC ${FETCH_DIR}
                 PUBLIC ${PROPERTY_INCL_DEPS}
             )
-    target_link_libraries(PropertyTest PUBLIC gtest gtest_main gmock)
+    target_link_libraries(PropertyTest PUBLIC Property gtest gtest_main gmock)
     enable_testing()
     add_test(NAME PropertyTest COMMAND PropertyTest)
 endif()
