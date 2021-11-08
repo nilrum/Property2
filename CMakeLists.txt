@@ -59,11 +59,10 @@ set(PROPERTY_SRC
         PropertyClass.cpp
         Serialization.cpp
         PropertyEditor.cpp
-        ${PUGIXML_DIR}/src/pugixml.cpp
         )
 
 #Объявление библиотеки
-add_library(Property STATIC ${PROPERTY_SRC})
+add_library(Property STATIC ${PROPERTY_SRC} ${PUGIXML_DIR}/src/pugixml.cpp)
 target_include_directories(Property PUBLIC ${PROPERTY_INCL_DEPS})
 
 #Если не указано что либо другого, то тесты включены по умолчанию
@@ -91,6 +90,7 @@ if(${BUILD_TEST})
     #Объявим цель тестирования
     add_executable(PropertyTest
             ${PROPERTY_SRC}
+            ${PUGIXML_DIR}/src/pugixml.cpp
             tests/PropertyTest.cpp
             tests/TestCasePropertyClass.cpp
             tests/VariableTest.cpp
@@ -114,5 +114,5 @@ if(NOT DEFINED ROOT_PROJECT)
     foreach(F ${PROPERTY_SRC})
         set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} ${FETCH_DIR}/Property/${F})
     endforeach()
-    set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} PARENT_SCOPE)
+    set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} ${PUGIXML_DIR}/src/pugixml.cpp PARENT_SCOPE)
 endif()
