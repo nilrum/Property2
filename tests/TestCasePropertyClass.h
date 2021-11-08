@@ -5,7 +5,7 @@
 #ifndef TESTAPP_TESTCASEPROPERTYCLASS_H
 #define TESTAPP_TESTCASEPROPERTYCLASS_H
 
-#include "Serialization.h"
+#include "../Serialization.h"
 
 class TPropertyInher2 : public TPropertyClass{
 public:

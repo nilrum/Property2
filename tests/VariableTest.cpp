@@ -3,7 +3,7 @@
 //
 
 #include "gtest/gtest.h"
-#include "Variable.h"
+#include "../Variable.h"
 
 ENUM(TTestEnum, one, two, three);
 ENUM_CLASS(TTestEnumClass, first, second);

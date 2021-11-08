@@ -2,7 +2,7 @@
 // Created by user on 30.09.2019.
 //
 #include <gtest/gtest.h>
-#include <PropertyEditor.h>
+#include "../PropertyEditor.h"
 #include "TestCasePropertyClass.h"
 
 TEST(TestPropertyEditor, TestInit)

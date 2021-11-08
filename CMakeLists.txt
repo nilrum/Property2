@@ -98,7 +98,6 @@ if(${BUILD_TEST})
             )
 
     target_include_directories(PropertyTest
-                PUBLIC ${CMAKE_SOURCE_DIR}
                 PUBLIC ${FETCH_DIR}
                 PUBLIC ${PROPERTY_INCL_DEPS}
             )
