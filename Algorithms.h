@@ -76,4 +76,16 @@ T TrimBefore(const T& value, typename T::value_type delim, size_t maxCount = 0)
     return T{value.begin() + value.size() - maxCount, value.end()};
 }
 
+inline bool TryStrToInt(const TString& str, int& value)
+{
+    try{
+        value = std::stoi(str);
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
 #endif //PROPERTYEXAMPLE_ALGORITHMS_H

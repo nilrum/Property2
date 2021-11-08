@@ -49,6 +49,7 @@ set(PROPERTY_HDR
         Serialization.h
         Serialization.hpp
         PropertyEditor.h
+        GlobalCustom.h
         )
 
 set(PROPERTY_SRC
@@ -59,6 +60,7 @@ set(PROPERTY_SRC
         PropertyClass.cpp
         Serialization.cpp
         PropertyEditor.cpp
+        GlobalCustom.cpp
         )
 
 #Объявление библиотеки
