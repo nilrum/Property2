@@ -8,13 +8,17 @@ set(CMAKE_CXX_STANDARD 17)
 #Определяем зависимости проекта
 include(FetchContent)
 
-set(PUGIXML_DIR ${CMAKE_SOURCE_DIR}/Libs/pugixml)
+if(NOT DEFINED ${FETCH_DIR})
+    set(FETCH_DIR ${CMAKE_SOURCE_DIR}/Libs)
+endif()
+
+set(PUGIXML_DIR ${FETCH_DIR}/pugixml)
 FetchContent_Declare(pugixml
         GIT_REPOSITORY https://github.com/zeux/pugixml.git
         SOURCE_DIR ${PUGIXML_DIR}
         )
 
-set(SIGSLOT_DIR ${CMAKE_SOURCE_DIR}/Libs/sigslot)
+set(SIGSLOT_DIR ${FETCH_DIR}/sigslot)
 FetchContent_Declare(sigslot
         GIT_REPOSITORY https://github.com/palacaze/sigslot.git
         SOURCE_DIR ${SIGSLOT_DIR}
@@ -68,7 +72,7 @@ if(${BUILD_TEST})
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
 
-    set(GOOGLETEST_DIR ${CMAKE_SOURCE_DIR}/Libs/googletest)
+    set(GOOGLETEST_DIR ${FETCH_DIR}/googletest)
     FetchContent_Declare(googletest
             GIT_REPOSITORY https://github.com/google/googletest.git
             SOURCE_DIR ${GOOGLETEST_DIR}
@@ -84,6 +88,7 @@ if(${BUILD_TEST})
             )
     target_include_directories(PropertyTest
                 PUBLIC ${CMAKE_SOURCE_DIR}
+                PUBLIC ${FETCH_DIR}
                 PUBLIC ${PUGIXML_DIR}/src
                 PUBLIC ${SIGSLOT_DIR}/include
                 PUBLIC ${GOOGLETEST_DIR}/googletest/include
