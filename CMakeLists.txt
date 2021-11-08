@@ -6,17 +6,22 @@ set(CMAKE_CXX_STANDARD 17)
 #Property lib files
 
 #Определяем зависимости проекта
-if(NOT DEFINED ${FETCH_DIR})
+if(NOT DEFINED FETCH_DIR)
+    #Если FETCH_DIR не объявлен, то считаем что это корневой проект
     set(FETCH_DIR ${CMAKE_SOURCE_DIR}/Libs)
-    set(NOT_ROOT_PROJECT TRUE)
+    set(ROOT_PROJECT TRUE)
 endif()
 
+#Каталоги для загрузки зависимостей
 set(PUGIXML_DIR ${FETCH_DIR}/pugixml)
 set(SIGSLOT_DIR ${FETCH_DIR}/sigslot)
+
+#Набор каталогов для указания target_include..
 set(PROPERTY_INCL_DEPS
         ${PUGIXML_DIR}/src
         ${SIGSLOT_DIR}/include)
 
+#Загрузка зависимостей без add_subdirectory
 include(FetchContent)
 
 FetchContent_Declare(pugixml
@@ -32,6 +37,7 @@ FetchContent_Declare(sigslot
 FetchContent_Populate(pugixml)
 FetchContent_Populate(sigslot)
 
+#Набор h и cpp файлов библиотеки
 set(PROPERTY_HDR
         Types.h
         Algorithms.h
@@ -56,16 +62,18 @@ set(PROPERTY_SRC
         ${PUGIXML_DIR}/src/pugixml.cpp
         )
 
+#Объявление библиотеки
 add_library(Property STATIC ${PROPERTY_SRC})
 target_include_directories(Property PUBLIC ${PROPERTY_INCL_DEPS})
 
-if(NOT DEFINED ${BUILD_TEST})
+#Если не указано что либо другого, то тесты включены по умолчанию
+if(NOT DEFINED BUILD_TEST)
     set(BUILD_TEST ON)
 endif()
 
 if(${BUILD_TEST})
     message("Build property test enabled")
-
+    #Загрузка googletest и вызов add_subdirectory
     if(MSVC)
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
@@ -77,8 +85,10 @@ if(${BUILD_TEST})
             )
     FetchContent_MakeAvailable(googletest)
 
+    #Обновим каталоги зависимостей
     set(PROPERTY_INCL_DEPS ${PROPERTY_INCL_DEPS} ${GOOGLETEST_DIR}/googletest/include)
 
+    #Объявим цель тестирования
     add_executable(PropertyTest
             ${PROPERTY_SRC}
             tests/PropertyTest.cpp
@@ -97,13 +107,13 @@ if(${BUILD_TEST})
     add_test(NAME PropertyTest COMMAND PropertyTest)
 endif()
 
-if(DEFINED ${NOT_ROOT_PROJECT})
+if(NOT DEFINED ROOT_PROJECT)
     #Объявим каталоги включения для родительского проекта
     set(PROPERTY_INCL_DEPS ${PROPERTY_INCL_DEPS} PARENT_SCOPE)
     #Объявим для родителя наши исходники
 
-    set(PROPERTY_SRC ${PROPERTY_SRC} PARENT_SCOPE)
-    #foreach(F ${PROPERTY_SRC})
-    #    set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} Property/${F})
-    #endforeach()
+    foreach(F ${PROPERTY_SRC})
+        set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} Property/${F})
+    endforeach()
+    set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} PARENT_SCOPE)
 endif()
