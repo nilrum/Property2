@@ -6,6 +6,7 @@
 #define PROPERTYEXAMPLE_ALGORITHMS_H
 
 #include <algorithm>
+#include <cmath>
 
 template<typename T>
 std::vector<T> Split(const T& value, typename T::value_type delim)
@@ -87,5 +88,88 @@ inline bool TryStrToInt(const TString& str, int& value)
         return false;
     }
 }
+
+
+
+struct TDoubleCheck{
+
+    static bool Equal(const double& one, const double& two)
+    {
+        if(one > 0. && two > 0. || one < 0. && two < 0.)
+            return std::fabs(one - two) < 0.00001;
+        else
+            return std::fabs(one + two) < 0.00001;
+    }
+
+    static bool Less(const double& one, const double& two)
+    {
+        if(one > 0. && two > 0. || one < 0. && two < 0.)
+            return std::fabs(two) - std::fabs(one) > 0.00001;
+        else
+            return std::fabs(two + one) > 0.00001;
+    }
+
+    static bool Great(const double& one, const double& two)
+    {
+        return Less(two, one);
+    }
+
+    static bool LessEq(const double& one, const double& two)
+    {
+        return Less(one, two) || Equal(one, two);
+    }
+
+    static bool GreatEq(const double& one, const double& two)
+    {
+        return Great(one, two) || Equal(one, two);
+    }
+
+    struct TDoubleLess// : public std::binary_function<double, double, bool>
+    {
+        bool operator()(const double& x, const double& y) const
+        { return Less(x, y); }
+    };
+
+    struct TDoubleLessEq// : public std::binary_function<double, double, bool>
+    {
+        bool operator()(const double& x, const double& y) const
+        { return LessEq(x, y); }
+    };
+
+    struct TDoubleGreater// : public std::binary_function<double, double, bool>
+    {
+        bool operator()(const double& x, const double& y) const
+        { return Great(x, y); }
+    };
+    struct TDoubleGreaterEq// : public std::binary_function<double, double, bool>
+    {
+        bool operator()(const double& x, const double& y) const
+        { return GreatEq(x, y); }
+    };
+};
+
+
+template<typename TVec>
+bool RemoveVal(TVec& vec, const typename TVec::value_type& val)
+{
+    typename TVec::iterator it = std::find(vec.begin(), vec.end(), val);
+    if(it == vec.end()) return false;
+    vec.erase(it);
+    return true;
+}
+
+template<typename TVec>
+bool RemoveValFor(TVec& vec, const typename TVec::value_type& val)
+{
+    for(auto it = vec.begin(); it != vec.end(); it++)
+        if(*it == val)
+        {
+            vec.erase(it);
+            return true;
+        }
+    return false;
+}
+
+
 
 #endif //PROPERTYEXAMPLE_ALGORITHMS_H
