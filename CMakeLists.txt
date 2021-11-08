@@ -112,7 +112,7 @@ if(NOT DEFINED ROOT_PROJECT)
     #Объявим для родителя наши исходники
 
     foreach(F ${PROPERTY_SRC})
-        set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} Property/${F})
+        set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} ${FETCH_DIR}/Property/${F})
     endforeach()
     set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} PARENT_SCOPE)
 endif()
