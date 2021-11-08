@@ -13,7 +13,9 @@ endif()
 
 set(PUGIXML_DIR ${FETCH_DIR}/pugixml)
 set(SIGSLOT_DIR ${FETCH_DIR}/sigslot)
-set(PROPERTY_INCL_DEPS PUGIXML_DIR/src SIGSLOT_DIR/include)
+set(PROPERTY_INCL_DEPS
+        ${PUGIXML_DIR}/src
+        ${SIGSLOT_DIR}/include)
 
 include(FetchContent)
 
@@ -86,6 +88,7 @@ if(${BUILD_TEST})
             )
 
     target_include_directories(PropertyTest
+                PUBLIC ${CMAKE_SOURCE_DIR}
                 PUBLIC ${FETCH_DIR}
                 PUBLIC ${PROPERTY_INCL_DEPS}
             )
