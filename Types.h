@@ -34,4 +34,13 @@ T &Single(T&& value)
 #define STATIC_ARG(TYPE, NAME, ...) static TYPE& NAME(){ static TYPE value(__VA_ARGS__); return value; };
 #define STATIC(TYPE, NAME) static TYPE& NAME(){ static TYPE value; return value; };
 #define STR(VALUE) (VALUE).c_str()
+
+#define CLASS_PTRS_TYPE(NAME, TYPE) \
+    using TPtr##NAME = std::shared_ptr<TYPE>; \
+    using TUPtr##NAME = std::unique_ptr<TYPE>;\
+    using TWPtr##NAME = std::weak_ptr<TYPE>;  \
+    using TRaw##NAME = TYPE*;
+
+#define CLASS_PTRS(NAME) CLASS_PTRS_TYPE(NAME, T##NAME)
+
 #endif //PROPERTY_TYPES_H
