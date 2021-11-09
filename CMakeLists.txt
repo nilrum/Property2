@@ -3,39 +3,16 @@ project(Property)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#Property lib files
+include(${CMAKE_SOURCE_DIR}/Libs/Fetch.cmake)
 
 #Определяем зависимости проекта
-if(NOT DEFINED FETCH_DIR)
-    #Если FETCH_DIR не объявлен, то считаем что это корневой проект
-    set(FETCH_DIR ${CMAKE_SOURCE_DIR}/Libs)
-    set(ROOT_PROJECT TRUE)
-endif()
-
-#Каталоги для загрузки зависимостей
-set(PUGIXML_DIR ${FETCH_DIR}/pugixml)
-set(SIGSLOT_DIR ${FETCH_DIR}/sigslot)
-
-#Набор каталогов для указания target_include..
-set(PROPERTY_INCL_DEPS
-        ${PUGIXML_DIR}/src
-        ${SIGSLOT_DIR}/include)
 
 #Загрузка зависимостей без add_subdirectory
-include(FetchContent)
+#Набор каталогов для указания target_include..
+set(PROPERTY_INCL_DEPS ${CMAKE_SOURCE_DIR})
 
-FetchContent_Declare(pugixml
-        GIT_REPOSITORY https://github.com/zeux/pugixml.git
-        SOURCE_DIR ${PUGIXML_DIR}
-        )
-
-FetchContent_Declare(sigslot
-        GIT_REPOSITORY https://github.com/palacaze/sigslot.git
-        SOURCE_DIR ${SIGSLOT_DIR}
-        )
-
-FetchContent_Populate(pugixml)
-FetchContent_Populate(sigslot)
+Populate(pugixml PUGIXML src github.com/zeux/pugixml PROPERTY_INCL_DEPS)
+Populate(sigslot SIGSLOT include github.com/palacaze/sigslot PROPERTY_INCL_DEPS)
 
 #Набор h и cpp файлов библиотеки
 set(PROPERTY_HDR
@@ -64,13 +41,8 @@ set(PROPERTY_SRC
         )
 
 #Объявление библиотеки
-add_library(Property STATIC ${PROPERTY_SRC} ${PUGIXML_DIR}/src/pugixml.cpp)
+add_library(Property STATIC ${PROPERTY_SRC} ${PUGIXML_INCL}/pugixml.cpp)
 target_include_directories(Property PUBLIC ${PROPERTY_INCL_DEPS})
-
-#Если не указано что либо другого, то тесты включены по умолчанию
-if(NOT DEFINED BUILD_TEST)
-    set(BUILD_TEST ON)
-endif()
 
 if(${BUILD_TEST})
     message("Build property test enabled")
@@ -79,15 +51,7 @@ if(${BUILD_TEST})
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
 
-    set(GOOGLETEST_DIR ${FETCH_DIR}/googletest)
-    FetchContent_Declare(googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            SOURCE_DIR ${GOOGLETEST_DIR}
-            )
-    FetchContent_MakeAvailable(googletest)
-
-    #Обновим каталоги зависимостей
-    set(PROPERTY_INCL_DEPS ${PROPERTY_INCL_DEPS} ${GOOGLETEST_DIR}/googletest/include)
+    MakeAvailable(googletest GOOGLETEST googletest/include github.com/google/googletest PROPERTY_INCL_DEPS)
 
     #Объявим цель тестирования
     add_executable(PropertyTest
