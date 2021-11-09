@@ -3,16 +3,14 @@ project(Property)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include(${CMAKE_SOURCE_DIR}/Libs/Fetch.cmake)
+include(C:/CMakeProjects/Fetch.cmake)
 
 #Определяем зависимости проекта
 
 #Загрузка зависимостей без add_subdirectory
 #Набор каталогов для указания target_include..
-set(PROPERTY_INCL_DEPS ${CMAKE_SOURCE_DIR})
-
-Populate(pugixml PUGIXML src github.com/zeux/pugixml PROPERTY_INCL_DEPS)
-Populate(sigslot SIGSLOT include github.com/palacaze/sigslot PROPERTY_INCL_DEPS)
+Populate(pugixml github.com/zeux/pugixml src)
+Populate(sigslot github.com/palacaze/sigslot include)
 
 #Набор h и cpp файлов библиотеки
 set(PROPERTY_HDR
@@ -41,8 +39,8 @@ set(PROPERTY_SRC
         )
 
 #Объявление библиотеки
-add_library(Property STATIC ${PROPERTY_SRC} ${PUGIXML_INCL}/pugixml.cpp)
-target_include_directories(Property PUBLIC ${PROPERTY_INCL_DEPS})
+add_library(Property STATIC ${PROPERTY_SRC} ${pugixml_INCL}/pugixml.cpp)
+target_include_directories(Property PUBLIC ${Property_DEPS_INCL})
 
 if(${BUILD_TEST})
     message("Build property test enabled")
@@ -51,7 +49,8 @@ if(${BUILD_TEST})
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
 
-    MakeAvailable(googletest GOOGLETEST googletest/include github.com/google/googletest PROPERTY_INCL_DEPS)
+    MakeAvailable(googletest github.com/google/googletest googletest/include)
+    ShowDepsIncl()
 
     #Объявим цель тестирования
     add_executable(PropertyTest
@@ -63,20 +62,9 @@ if(${BUILD_TEST})
 
     target_include_directories(PropertyTest
                 PUBLIC ${FETCH_DIR}
-                PUBLIC ${PROPERTY_INCL_DEPS}
+                PUBLIC ${Property_DEPS_INCL}
             )
     target_link_libraries(PropertyTest PUBLIC Property gtest gtest_main gmock)
     enable_testing()
     add_test(NAME PropertyTest COMMAND PropertyTest)
-endif()
-
-if(NOT DEFINED ROOT_PROJECT)
-    #Объявим каталоги включения для родительского проекта
-    set(PROPERTY_INCL_DEPS ${PROPERTY_INCL_DEPS} PARENT_SCOPE)
-    #Объявим для родителя наши исходники
-
-    foreach(F ${PROPERTY_SRC})
-        set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} ${FETCH_DIR}/Property/${F})
-    endforeach()
-    set(FULL_PROPERTY_SRC ${FULL_PROPERTY_SRC} ${PUGIXML_DIR}/src/pugixml.cpp PARENT_SCOPE)
 endif()
