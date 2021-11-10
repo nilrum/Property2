@@ -40,7 +40,7 @@ set(PROPERTY_SRC
 
 #Объявление библиотеки
 add_library(Property STATIC ${PROPERTY_SRC} ${pugixml_INCL}/pugixml.cpp)
-target_include_directories(Property PUBLIC ${Property_DEPS_INCL})
+target_include_directories(Property PUBLIC ${FETCH_DIR} ${Property_DEPS_INCL})
 
 if(${BUILD_TEST})
     message("Build property test enabled")
@@ -50,7 +50,6 @@ if(${BUILD_TEST})
     endif()
 
     MakeAvailable(googletest github.com/google/googletest googletest/include)
-    ShowDepsIncl()
 
     #Объявим цель тестирования
     add_executable(PropertyTest
