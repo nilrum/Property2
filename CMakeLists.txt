@@ -68,3 +68,6 @@ if(${BUILD_TEST})
     enable_testing()
     add_test(NAME PropertyTest COMMAND PropertyTest)
 endif()
+
+#Включаем зависимости для корневого проекта
+DepsAvailable()
