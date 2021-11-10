@@ -43,4 +43,14 @@ T &Single(T&& value)
 
 #define CLASS_PTRS(NAME) CLASS_PTRS_TYPE(NAME, T##NAME)
 
+#define INIT_SECTION(NAME, INIT) \
+    namespace INIT_##NAME{       \
+        bool Fun##NAME()         \
+        {                        \
+            INIT\
+            return true;         \
+        }                        \
+        const bool Cnst_##NAME = Fun##NAME();\
+    }
+
 #endif //PROPERTY_TYPES_H
