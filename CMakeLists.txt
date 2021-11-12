@@ -60,15 +60,8 @@ if(${BUILD_TEST})
             tests/VariableTest.cpp
             tests/PropertyEditorTest.cpp
             )
-
-    target_include_directories(PropertyTest
-                PUBLIC ${FETCH_DIR}
-                PUBLIC ${Property_DEPS_INCL}
-            )
-    target_link_libraries(PropertyTest PUBLIC Property gtest gtest_main gmock)
+    
+    target_link_libraries(PropertyTest Property gtest gtest_main gmock)
     enable_testing()
     add_test(NAME PropertyTest COMMAND PropertyTest)
 endif()
-
-#Включаем зависимости для корневого проекта
-DepsAvailable()
