@@ -9,13 +9,12 @@ include(C:/CMakeProjects/Fetch.cmake)
 
 #Загрузка зависимостей без add_subdirectory
 #Набор каталогов для указания target_include..
+Populate(Base github.com/nilrum/Base .)
 Populate(pugixml github.com/zeux/pugixml src)
 Populate(sigslot github.com/palacaze/sigslot include)
 
 #Набор h и cpp файлов библиотеки
 set(PROPERTY_HDR
-        Types.h
-        Algorithms.h
         Result.h
         EnumInfo.h
         Variable.h
