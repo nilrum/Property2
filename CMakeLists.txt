@@ -38,8 +38,10 @@ set(PROPERTY_SRC
         )
 
 #Объявление библиотеки
-add_library(Property STATIC ${PROPERTY_SRC} ${pugixml_INCL}/pugixml.cpp)
-target_include_directories(Property PUBLIC ${FETCH_DIR} ${Property_DEPS_INCL})
+if(NOT TARGET Property)
+    add_library(Property STATIC ${PROPERTY_SRC} ${pugixml_INCL}/pugixml.cpp)
+    target_include_directories(Property PUBLIC ${FETCH_DIR} ${Property_DEPS_INCL})
+endif()
 
 if(${BUILD_TEST})
     message("Build property test enabled")
@@ -48,8 +50,9 @@ if(${BUILD_TEST})
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
 
-    MakeAvailable(googletest github.com/google/googletest googletest/include)
-
+    if(NOT TARGET gtest)
+        MakeAvailable(googletest github.com/google/googletest googletest/include)
+    endif()
     #Объявим цель тестирования
     add_executable(PropertyTest
             tests/PropertyTest.cpp
