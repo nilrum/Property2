@@ -5,20 +5,17 @@
 #ifndef NEO_PROGRESS_H
 #define NEO_PROGRESS_H
 
-#include "Result.h"
+#include "Property/Result.h"
 #include <mutex>
 #include "sigslot/signal.hpp"
 
 using TLock = std::lock_guard<std::mutex>;
+using TUniqueLock = std::unique_lock<std::mutex>;
 
 class TProgress{
 public:
     virtual ~TProgress(){};
     enum TTypeProgress{tpAbsolut = 0, tpStep};
-
-    //The functions do not call GUI functions
-    bool IsSend() const;
-    virtual TProgress& SetIsSend(bool value);
 
     double Border() const;
     TProgress& SetBorder(double value);
@@ -35,52 +32,35 @@ public:
 
     TProgress& SetMaxAndBorderCoef(double value, double coef);
 
-    void Progress(double value);//отправить значение прогресса
-    void Finish();//отправить максимум и закрыть диалог
+    bool Progress(double value);//отправить значение прогресса и возвращает можно ли продолжить
+    void Finish();              //отправить максимум и закрыть диалог
+    bool IsFinished();          //возвращает активность прогресса
 
-    void SetError(TResult value);
+    void Reset();
 
-    sigslot::signal<TResult> OnFinish;
+    bool IsCancel() const;
+    void SetCancel();
+
+    void SetResult(TResult value, bool isCall = true);
+    sigslot::signal<TResult> OnResult;
+
 protected:
     TTypeProgress typeProg = tpAbsolut;
-    std::mutex mut;
+    mutable std::mutex mut;
 
     double cur = 0.;        //текущее положение прогресса
     double maxProg = 10.;   //максимальное значение прогресса
     double borderProg = 0.; //пороговое значение для обновления отображения прогресса
     double curBorder = 0.;  //текуший порог обновления
     TString text;
-    TResult error;
-    bool isSend = false;    //используется режим пересылки прогресса TODO
     bool isChanged = true;  //изменились ли параметры прогресса
+    bool isCancel = false;  //отменили прогресс
+    TResult result;
 
+    //функции вызываемые из главного потока
     virtual void ViewShow(){};
+    virtual void CallResult(){ OnResult(result); };
 };
 
-using TPtrProgress = std::shared_ptr<TProgress>;
-
-#include <functional>
-#include <thread>
-
-class TPoolFunction{
-public:
-    using TCallFunction = std::function<TResult()>;
-
-    static TPoolFunction* Create(TPtrProgress progress = TPtrProgress());
-    void Start();
-    void Reset();
-    void Add(TCallFunction value);
-    TPtrProgress& Progress() { return progress; };
-
-    sigslot::signal<TResult> OnFinish; //сигнал о том что обработка завершена
-    sigslot::signal<> OnStep; //сигнал о том что один из элементов списка отработал
-private:
-    TPoolFunction(){};
-    TPtrProgress progress;
-    std::unique_ptr<TPoolFunction> ptr;
-    std::mutex mut;
-    std::vector<TCallFunction> functions;
-    std::atomic<int> results;
-    TResult error;
-};
-#endif //NEO_PROGRESS_H
+CLASS_PTRS(Progress)
+#endif

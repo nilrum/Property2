@@ -3,9 +3,9 @@
 //
 
 #include "Progress.h"
-#include "Base/Algorithms.h"
+#include "Algorithms.h"
 
-void TProgress::Progress(double value)
+bool TProgress::Progress(double value)
 {
     {
         TLock guard(mut);
@@ -16,17 +16,21 @@ void TProgress::Progress(double value)
                 break;
 
             case tpStep:
-                cur = cur + value;
+                if(value != 0.)
+                    cur = cur + value;
+                else
+                    cur = value;
                 break;
         }
-        if (value != 0. && borderProg != 0.)
+        if (cur > 0. && borderProg > 0.)
         {
             if (TDoubleCheck::Less(cur, curBorder))
-                return;         //если бордюр не преодолели то окно прогресса не вызываем
+                return !isCancel;         //если бордюр не преодолели, то окно прогресса не вызываем
             curBorder = curBorder + borderProg; //если бордюр преодолен, то отобразим окно
         }
     }
     ViewShow();
+    return !IsCancel();
 }
 
 void TProgress::Finish()
@@ -34,16 +38,10 @@ void TProgress::Finish()
     Progress(maxProg + 1);
 }
 
-bool TProgress::IsSend() const
+bool TProgress::IsFinished()
 {
-    return isSend;
-}
-
-TProgress &TProgress::SetIsSend(bool value)
-{
-    isChanged = isSend != value;
-    isSend = value;
-    return *this;
+    TLock guard(mut);
+    return cur >= maxProg;
 }
 
 double TProgress::Border() const
@@ -107,71 +105,29 @@ TProgress &TProgress::SetMaxAndBorderCoef(double value, double coef)
     return *this;
 }
 
-void TProgress::SetError(TResult value)
+void TProgress::SetResult(TResult value, bool isCall)
 {
-    TLock lock(mut);
-    error = value;
+    result = value;
+    if(isCall)
+        CallResult();
 }
 
-//-----------------------------------------------------------------------------------------------------------
-TPoolFunction* TPoolFunction::Create(TPtrProgress progress)
+void TProgress::Reset()
 {
-    TPoolFunction* res = new TPoolFunction();//создаем пулл функций
-    res->ptr.reset(res);//отдаем ему на хранение
-    res->progress = progress;
-    return res;
+    OnResult.disconnect_all();
+    result = TResult();
+    cur = 0.;
+    isCancel = false;
 }
 
-void TPoolFunction::Start()
+bool TProgress::IsCancel() const
 {
-    results = 0;
-
-    if(functions.empty())
-    {
-        ptr.reset();//освобождаем
-        return;
-    }
-
-    if(progress)
-    {
-        progress->SetIsSend(true);
-        progress->SetTypeProgress(TProgress::tpStep);
-        progress->SetMax(functions.size());
-    }
-    for(const auto& fun : functions)
-    {
-        std::thread t(
-                [this, fun]() {
-
-                    TResult res = fun();
-                    if(res.IsError())//если была ошибка выполнения
-                    {
-                        TLock lock(mut);
-                        if(error.IsNoError())//сохраняем только первую ошибку из списка
-                        {
-                            error = res;
-                            if (progress) progress->SetError(error);
-                        }
-                    }
-                    results++;
-                    if (progress) progress->Progress(1.);
-                    if (results == functions.size())
-                    {
-                        OnFinish(error);
-                        ptr.reset();
-                    }
-                });
-        t.detach();
-    }
+    TLock guard(mut);
+    return isCancel;
 }
 
-void TPoolFunction::Add(TPoolFunction::TCallFunction value)
+void TProgress::SetCancel()
 {
-    functions.push_back(value);
+    TLock guard(mut);
+    isCancel = true;
 }
-
-void TPoolFunction::Reset()
-{
-    ptr.reset();//освобождаем
-}
-
