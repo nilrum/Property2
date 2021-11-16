@@ -24,6 +24,7 @@ set(PROPERTY_HDR
         Serialization.hpp
         PropertyEditor.h
         GlobalCustom.h
+        Progress.h
         )
 
 set(PROPERTY_SRC
@@ -35,6 +36,7 @@ set(PROPERTY_SRC
         Serialization.cpp
         PropertyEditor.cpp
         GlobalCustom.cpp
+        Progress.cpp
         )
 
 #Объявление библиотеки
@@ -60,7 +62,7 @@ if(${BUILD_TEST})
             tests/VariableTest.cpp
             tests/PropertyEditorTest.cpp
             )
-    
+
     target_link_libraries(PropertyTest Property gtest gtest_main gmock)
     enable_testing()
     add_test(NAME PropertyTest COMMAND PropertyTest)
