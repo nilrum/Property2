@@ -25,6 +25,7 @@ set(PROPERTY_HDR
         PropertyEditor.h
         GlobalCustom.h
         Progress.h
+        History.h
         )
 
 set(PROPERTY_SRC
@@ -37,6 +38,7 @@ set(PROPERTY_SRC
         PropertyEditor.cpp
         GlobalCustom.cpp
         Progress.cpp
+        History.cpp
         )
 
 #Объявление библиотеки

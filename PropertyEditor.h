@@ -8,6 +8,7 @@
 #include <deque>
 #include <cmath>
 #include "PropertyClass.h"
+#include "History.h"
 
 class TObjTree;
 class TCustClass;
@@ -260,7 +261,7 @@ protected:
 };
 
 
-/*class THistoryItemEditor : public THistoryItemTime{
+class THistoryItemEditor : public THistoryItemTime{
 public:
     THistoryItemEditor(TPtrPropertyClass ptr, int ind);
     THistoryItemEditor(TPtrPropertyClass ptr, const TString& propName);
@@ -272,6 +273,6 @@ private:
     int indProp = -1;
     TVariable value;
 };
-*/
+
 
 #endif //TESTAPP_PROPERTYEDITOR_H

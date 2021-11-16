@@ -5,6 +5,7 @@
 #include "PropertyEditor.h"
 #include "Algorithms.h"
 
+
 TPropertyEditor::TPropertyEditor(const TPtrObjTree& t)
 {
     SetTree(t);
@@ -372,7 +373,7 @@ void TObjTree::SetValue(const TVariable &value)
     TPtrPropertyClass lock;
     if(IsProp(lock))
     {
-        //HISTORY_CREATE(THistoryItemEditor, lock, indProp)
+        HISTORY_CREATE(THistoryItemEditor, lock, indProp)
         lock->WriteProperty(indProp, value);
     }
 }
@@ -662,7 +663,7 @@ void TCustClass::Set(const TCustClass &value)
     checkPropFun = value.checkPropFun;
 }
 
-/*
+
 THistoryItemEditor::THistoryItemEditor(TPtrPropertyClass ptr, int ind):obj(ptr), indProp(ind)
 {
     name = STDFORMAT("%s \"%s\"", HISTORY_TRANSR("Edit property"), HISTORY_TRANSR(ptr->Manager().Property(ind).Name()));
@@ -698,4 +699,3 @@ bool THistoryItemEditor::MergeItem(THistoryItem* value)
     if(res) time = oth->time;
     return res;
 }
-*/
