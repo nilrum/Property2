@@ -42,4 +42,6 @@ TResult ReadFile(T& value, size_t index, size_t count, const TPtrFile& file)
 TResult ReadStringFromFile(TString& value, const TPtrFile& file);
 std::wstring WStringFromUtf8(const TString &value);
 
+TString Merge(const TVecString& values, typename TString::value_type delim);
+
 #endif //PROPERTY2_FILEFUNCTIONS_H
