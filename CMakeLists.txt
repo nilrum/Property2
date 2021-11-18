@@ -63,6 +63,7 @@ if(${BUILD_TEST})
             tests/TestCasePropertyClass.cpp
             tests/VariableTest.cpp
             tests/PropertyEditorTest.cpp
+            tests/AlgorithmsTest.cpp
             )
 
     target_link_libraries(PropertyTest Property gtest gtest_main gmock)
