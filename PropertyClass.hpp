@@ -114,26 +114,32 @@ TGetIndFun GetIndFun(R (T::*method)(TInd) const)
     };
 }
 
-#define PROPERTIES_BASE_CHK(TYPE, CREATE, CHECK)\
+//Макрос реализации который объявляет:
+//  PropertyManager как статическую переменную, две функции его получения
+//  Метод Create для создания shared_ptr
+//Данный макрос напрямую нигде не вызывать
+
+#define PROPERTIES_IMPL(TYPE, CREATE, OVERRIDE)\
     public:\
         STATIC_ARG(TPropertyManager, ManagerStatic, #TYPE, CREATE) \
         static TString TypeStatic() { return ManagerStatic().Type(); } \
-        virtual TPropertyManager& Manager() CHECK { return TYPE::ManagerStatic(); }\
-        virtual const TPropertyManager& Manager() const CHECK { return TYPE::ManagerStatic(); }\
+        virtual TPropertyManager& Manager() OVERRIDE { return TYPE::ManagerStatic(); }\
+        virtual const TPropertyManager& Manager() const OVERRIDE { return TYPE::ManagerStatic(); }\
         using TYPENAME = TYPE;                  \
         template<typename... TArgs>            \
-        static std::shared_ptr<TYPE> Create(TArgs&&... args) \
-        {                                      \
-            return std::shared_ptr<TYPE>(new TYPE(std::forward<TArgs>(args)...)); \
-        }
+            static std::shared_ptr<TYPE> Create(TArgs&&... args) \
+            {                                      \
+                return std::shared_ptr<TYPE>(new TYPE(std::forward<TArgs>(args)...)); \
+            }
+
+//Варианты создания shared_ptr
 #define DEF_CREATE(TYPE) [](){ return std::make_shared<TYPE>(); }
 #define NO_CREATE() TPropertyManager::TFunCreate()
 #define SHARED_CREATE(TYPE) [](){ return TYPE::CreateShared(); }
 
-#define PROPERTIES_BASE(TYPE) PROPERTIES_BASE_CHK(TYPE, DEF_CREATE(TYPE),)
-
+//Вариант наследования с выбором варианта создания класса
 #define PROPERTIES_CREATE(TYPE, BASE, CREATE, ...)\
-    PROPERTIES_BASE_CHK(TYPE, CREATE, override)\
+    PROPERTIES_IMPL(TYPE, CREATE, override)\
     static bool InitProperties() noexcept{\
         if(TYPE::ManagerStatic().IsInit()) return true;\
         BASE::InitProperties();\
@@ -143,22 +149,11 @@ TGetIndFun GetIndFun(R (T::*method)(TInd) const)
         return true;\
     }
 
+//Стандартный вариант для наследования от базового класса
 #define PROPERTIES(TYPE, BASE, ...) PROPERTIES_CREATE(TYPE, BASE, DEF_CREATE(TYPE), __VA_ARGS__)
 
-#define PROPERTIES_SHARED_AFTER(TYPE, BASE, AFTER, ...) \
-    template<typename... TArgs>            \
-    static std::shared_ptr<TYPE> CreateShared(TArgs&&... args) \
-    {                                      \
-        auto res = std::shared_ptr<TYPE>(new TYPE(std::forward<TArgs>(args)...)); \
-        res->thisWeak = res;                      \
-        AFTER                                      \
-        return res;                        \
-    } \
-    protected:                       \
-        std::weak_ptr<TYPE> thisWeak;\
-    PROPERTIES_CREATE(TYPE, BASE, SHARED_CREATE(TYPE), __VA_ARGS__)
-
-#define PROPERTIES_SHARED_FROM_AFTER(TYPE, BASE, AFTER, ...) \
+#define PROPERTIES_SHARED_IMPL(TYPE, BASE, AFTER, ...) \
+    PROPERTIES_CREATE(TYPE, BASE, SHARED_CREATE(TYPE), __VA_ARGS__) \
     template<typename... TArgs>            \
     static std::shared_ptr<TYPE> CreateShared(TArgs&&... args) \
     {                                      \
@@ -166,12 +161,19 @@ TGetIndFun GetIndFun(R (T::*method)(TInd) const)
         res->thisWeak = res;                                 \
         AFTER                                      \
         return res;                        \
-    } \
-    PROPERTIES_CREATE(TYPE, BASE, SHARED_CREATE(TYPE), __VA_ARGS__)
+    }
 
-#define PROPERTIES_SHARED_FROM(TYPE, BASE, ...) PROPERTIES_SHARED_FROM_AFTER(TYPE, BASE, ;, __VA_ARGS__)
 
-#define PROPERTIES_SHARED(TYPE, BASE, ...) PROPERTIES_SHARED_AFTER(TYPE, BASE, ;, __VA_ARGS__)
+#define PROPERTIES_SHARED_DEF_IMPL(TYPE, BASE, AFTER, ...) \
+    protected:                       \
+        std::weak_ptr<TYPE> thisWeak;\
+    PROPERTIES_SHARED_IMPL(TYPE, BASE, AFTER,  __VA_ARGS__) \
+
+
+//Вариант объявления класса от которого наследуются кто хочет иметь единый weak_ptr
+#define PROPERTIES_SHARED(TYPE, BASE, ...) PROPERTIES_SHARED_DEF_IMPL(TYPE, BASE, ;, __VA_ARGS__)
+//Наследование от пред варианта без создания своего weak_ptr
+#define PROPERTIES_SHARED_FROM(TYPE, BASE, ...) PROPERTIES_SHARED_IMPL(TYPE, BASE, ;, __VA_ARGS__)
 
 #define INIT_PROPERTYSN(NAME, TYPE) namespace { const bool init##NAME = TYPE::InitProperties(); }
 #define INIT_PROPERTYS(TYPE) INIT_PROPERTYSN(TYPE, TYPE)

@@ -214,7 +214,8 @@ class TPropertyClass: public std::enable_shared_from_this<TPropertyClass> {
 protected:
     TString name;
 public:
-    PROPERTIES_BASE(TPropertyClass)
+    //Базовый класс создаваемый по умолчанию, без override
+    PROPERTIES_IMPL(TPropertyClass, DEF_CREATE(TPropertyClass), )
 
     static bool InitProperties() noexcept;
 
