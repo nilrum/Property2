@@ -111,6 +111,9 @@ public:
     void SetTag(int value);
     virtual void TagChanged(const TPtrObjTree& value);
 
+    bool IsUseHistory() const;
+    void SetIsUseHistory(bool value);
+
     TCustClass* ClassCustoms(bool checkClass = true) const;
     TCustClass* PropCustoms() const;
     using TArrayInfo = std::tuple<TString, int>;
@@ -130,6 +133,8 @@ private:
     int indProp = -1;
 
     int tag = 0;
+
+    bool isUseHistory = true;
     void LoadItems() const;
 
     mutable std::vector<TPtrObjTree> items;

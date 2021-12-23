@@ -373,7 +373,8 @@ void TObjTree::SetValue(const TVariable &value)
     TPtrPropertyClass lock;
     if(IsProp(lock))
     {
-        HISTORY_CREATE(THistoryItemEditor, lock, indProp)
+        if(Root()->IsUseHistory())
+            HISTORY_CREATE(THistoryItemEditor, lock, indProp)
         lock->WriteProperty(indProp, value);
     }
 }
@@ -472,22 +473,19 @@ bool TObjTree::BeginDelete(TObjTree *objTree)
 void TObjTree::EndDelete(TObjTree *objTree)
 {
     if(parent.expired()) return;
-    TObjTree* p = (TObjTree*)(LockParent().get());
-    p->EndDelete(objTree);
+    parent.lock()->EndDelete(objTree);
 }
 
 void TObjTree::BeginAdd(TObjTree *objTree)
 {
     if(parent.expired()) return;
-    TObjTree* p = (TObjTree*)(LockParent().get());
-    p->BeginAdd(objTree);
+    parent.lock()->BeginAdd(objTree);
 }
 
 void TObjTree::EndAdd(TObjTree *objTree)
 {
     if(parent.expired()) return;
-    TObjTree* p = (TObjTree*)(LockParent().get());
-    p->EndAdd(objTree);
+    parent.lock()->EndAdd(objTree);
 }
 
 int TObjTree::Tag() const
@@ -522,6 +520,16 @@ void TObjTree::SetCheckedProp(const TString &value)
         root.lock()->SetCheckedProp(value);
     else
         checkedProp = value;
+}
+
+bool TObjTree::IsUseHistory() const
+{
+    return isUseHistory;
+}
+
+void TObjTree::SetIsUseHistory(bool value)
+{
+    isUseHistory = value;
 }
 //----------------------------------------------------------------------------------------------------------------------
 

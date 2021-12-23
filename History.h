@@ -62,9 +62,9 @@ public:
 
     inline int Tag() const { return tag; }
     inline void SetTag(int value) { tag = value; }
-PROPERTIES(THistory, TPropertyClass,
+    PROPERTIES(THistory, TPropertyClass,
            PROPERTY_ARRAY_READ(THistoryItem, items, CountItems, Item);
-)
+    )
 
     inline int PosItem() const { return posItem; }
     inline int PosSavePoint() const { return savePoint; }
