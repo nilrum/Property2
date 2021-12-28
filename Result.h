@@ -6,6 +6,7 @@
 #define PROPERTY2_RESULT_H
 
 #include "Types.h"
+#include "EnumInfo.h"
 
 class TResult{
 public:
@@ -35,6 +36,7 @@ public:
 
     static TString TextError(const TResult& value)
     {
+        //Сначало пробуем найти в зарегистрированных кодах ошибок
         TMapEnums::iterator it = Enums().find(value.Info().name());
         if(it != Enums().end())
         {
@@ -42,6 +44,11 @@ public:
             TMapCodes::iterator code = codes.find(value.Code());
             if (code != codes.end()) return code->second;
         }
+        //Если код не регистрировали, то найдем в перечислениях
+        auto enInf = TEnumInfo::EnumInfo(value.Info());
+        if(enInf.IsValid())
+            return enInf.Name(value.Code());
+        //Если это не перечисление, то просто вернем код
         return std::to_string(value.Code());
     }
 
