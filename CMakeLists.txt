@@ -26,6 +26,7 @@ set(PROPERTY_SRC
 if(NOT TARGET Property)
     add_library(Property STATIC ${PROPERTY_SRC} ${pugixml_INCL}/pugixml.cpp)
     target_include_directories(Property PUBLIC ${FETCH_DIR} ${Property_DEPS_INCL})
+    target_link_libraries(Property PUBLIC Base)
 endif()
 
 if(${BUILD_TEST})
@@ -42,9 +43,7 @@ if(${BUILD_TEST})
     add_executable(PropertyTest
             tests/PropertyTest.cpp
             tests/TestCasePropertyClass.cpp
-            tests/VariableTest.cpp
             tests/PropertyEditorTest.cpp
-            tests/AlgorithmsTest.cpp
             )
 
     target_link_libraries(PropertyTest Property gtest gtest_main gmock)
