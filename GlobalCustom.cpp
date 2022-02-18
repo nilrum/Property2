@@ -29,10 +29,10 @@ TPtrPropertyClass TGlobalCustom::FindCustom(const TString &path)
     {
         TVecString pn = SplitTrim(p, ':');
         index = (pn.size() > 1)? cur->IndexProperty(pn[0]) : 1;
-        if(index >= 0 && index < int(cur->CountProperty()))//свойство для поиска есть ищим
+        if(index >= 0 && index < int(cur->CountProperty()))//свойство для поиска есть ищем
         {
             int count = cur->CountInArray(index);
-            if(count && TryStrToInt(pn.back(), ind))//если можно привести к числу то берем его как  индекс в массиве свойства
+            if(count && TryStrToInt(pn.back(), ind))//если можно привести к числу, то берем его как индекс в массиве свойства
             {
                 cur = VariableToPropClass(cur->ReadFromArray(index, ind));
                 break;
